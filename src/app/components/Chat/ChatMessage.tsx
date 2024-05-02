@@ -14,4 +14,4 @@ function ChatMessage({ messageType, content }: ChatObject) {
   );
 }
 
-export default ChatMessage;
+export default React.memo(ChatMessage);
