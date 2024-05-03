@@ -5,6 +5,8 @@ import ChatObject from './components/Chat/types/ChatObject';
 import ChatBox from './components/Chat/ChatBox';
 import model from './utils/OllamaLangchain';
 import { ChatPromptTemplate } from '@langchain/core/prompts';
+import { MessagesPlaceholder } from '@langchain/core/prompts';
+import { HumanMessage, AIMessage } from '@langchain/core/messages';
 
 function Home() {
   const saveLogRef = useRef<HTMLInputElement>(null);
@@ -30,17 +32,23 @@ function Home() {
     setMessage('');
 
     setIsSending(true);
-    // const stream = await model
-    //   .pipe(new StringOutputParser())
-    //   .stream(`${content}`);
-    const prompt = ChatPromptTemplate.fromMessages(
-      [
-        ...addPrompt,
-        ...(saveLogRef.current?.checked ? messageLog : []),
-        { messageType: 'user', content: '{input}' },
-      ].map((log) => [log.messageType, log.content])
-    );
-    const stream = await prompt.pipe(model).stream({ input: content });
+    const prompt = ChatPromptTemplate.fromMessages([
+      ...addPrompt.map((e): [string, string] => [e.messageType, e.content]),
+      new MessagesPlaceholder('chat_history'),
+      ['user', '{input}'],
+    ]);
+    const stream = await prompt.pipe(model).stream({
+      chat_history: saveLogRef.current?.checked
+        ? messageLog.map((log) => {
+            if (log.messageType === 'assistant') {
+              return new AIMessage(log.content);
+            } else if (log.messageType === 'user') {
+              return new HumanMessage(log.content);
+            }
+          })
+        : [],
+      input: content,
+    });
 
     let chunks = '';
     for await (const chunk of stream) {
