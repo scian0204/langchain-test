@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@langchain/community": "^0.0.53",
+    "cheerio": "^1.0.0-rc.12",
+    "langchain": "^0.1.36",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",

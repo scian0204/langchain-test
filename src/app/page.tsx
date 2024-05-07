@@ -3,17 +3,14 @@
 import React, { useRef, useState } from 'react';
 import ChatObject from './components/Chat/types/ChatObject';
 import ChatBox from './components/Chat/ChatBox';
-import model from './utils/OllamaLangchain';
-import { ChatPromptTemplate } from '@langchain/core/prompts';
-import { MessagesPlaceholder } from '@langchain/core/prompts';
-import { HumanMessage, AIMessage } from '@langchain/core/messages';
+import SendMessage from './utils/SendMessage';
 
 function Home() {
   const saveLogRef = useRef<HTMLInputElement>(null);
   const [messageLog, setMessageLog] = useState<ChatObject[]>([]);
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [addPrompt, setAddPrompt] = useState<ChatObject[]>([]);
+  const [addPrompt, setAddPrompt] = useState<string[]>([]);
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     e.target.style.height = 'auto';
@@ -22,6 +19,7 @@ function Home() {
   };
 
   const handleMessageSubmit = async () => {
+    setIsSending(true);
     const content = message;
     const chatObject: ChatObject = { messageType: 'user', content };
     const temp: ChatObject[] = [...messageLog, chatObject];
@@ -31,30 +29,9 @@ function Home() {
     ]);
     setMessage('');
 
-    setIsSending(true);
-    const prompt = ChatPromptTemplate.fromMessages([
-      ...addPrompt.map((e): [string, string] => [e.messageType, e.content]),
-      new MessagesPlaceholder('chat_history'),
-      ['user', '{input}'],
-    ]);
-    const stream = await prompt.pipe(model).stream({
-      chat_history: saveLogRef.current?.checked
-        ? messageLog.map((log) => {
-            if (log.messageType === 'assistant') {
-              return new AIMessage(log.content);
-            } else if (log.messageType === 'user') {
-              return new HumanMessage(log.content);
-            }
-          })
-        : [],
-      input: content,
+    await SendMessage(content, messageLog, addPrompt, (content) => {
+      setMessageLog([...temp, { messageType: 'assistant', content }]);
     });
-
-    let chunks = '';
-    for await (const chunk of stream) {
-      chunks += chunk.content;
-      setMessageLog([...temp, { messageType: 'assistant', content: chunks }]);
-    }
     setIsSending(false);
   };
 
@@ -72,14 +49,16 @@ function Home() {
             id="resKor"
             onChange={(e) => {
               if (e.target.checked) {
-                setAddPrompt([
-                  {
-                    messageType: 'system',
-                    content: 'Always answer in Korean using Hangul',
-                  },
+                setAddPrompt((currentPrmt) => [
+                  'Always answer in Korean using Hangul',
+                  ...currentPrmt,
                 ]);
               } else {
-                setAddPrompt([]);
+                setAddPrompt((currentPrmt) => {
+                  const result = [...currentPrmt];
+                  result.shift();
+                  return result;
+                });
               }
             }}
           />
