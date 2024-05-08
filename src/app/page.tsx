@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import ChatBox from './components/Chat/ChatBox';
 import { useChat } from 'ai/react';
 
 function Home() {
+  const [isResWait, setIsResWait] = useState(false);
   const { messages, input, handleInputChange, handleSubmit, isLoading } =
     useChat({
       streamMode: 'text',
@@ -15,6 +16,9 @@ function Home() {
           id: 'resKor',
         },
       ],
+      onResponse: () => {
+        setIsResWait(false);
+      },
     });
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -23,10 +27,15 @@ function Home() {
     handleInputChange(e);
   };
 
+  const handleMessageSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    setIsResWait(true);
+    handleSubmit(e);
+  };
+
   return (
     <div className="chat-container">
-      <ChatBox messages={messages} />
-      <form className="input-area" onSubmit={handleSubmit}>
+      <ChatBox messages={messages} isResWait={isResWait} />
+      <form className="input-area" onSubmit={handleMessageSubmit}>
         <textarea
           value={input}
           onChange={handleMessageChange}

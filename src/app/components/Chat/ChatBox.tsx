@@ -2,7 +2,13 @@ import React from 'react';
 import ChatMessage from './ChatMessage';
 import { Message } from 'ai/react';
 
-function ChatBox({ messages }: { messages: Message[] }) {
+function ChatBox({
+  messages,
+  isResWait,
+}: {
+  messages: Message[];
+  isResWait: boolean;
+}) {
   return (
     <div className="chat-box" id="chat-box">
       {messages.map(
@@ -14,6 +20,9 @@ function ChatBox({ messages }: { messages: Message[] }) {
               content={message.content}
             />
           )
+      )}
+      {isResWait && (
+        <ChatMessage role="assistant" content="Llama will respond soon..." />
       )}
     </div>
   );
