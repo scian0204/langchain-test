@@ -1,17 +1,20 @@
 import React from 'react';
-import ChatObject from './types/ChatObject';
 import ChatMessage from './ChatMessage';
+import { Message } from 'ai/react';
 
-function ChatBox({ messages }: { messages: ChatObject[] }) {
+function ChatBox({ messages }: { messages: Message[] }) {
   return (
     <div className="chat-box" id="chat-box">
-      {messages.map((message, index) => (
-        <ChatMessage
-          key={index}
-          messageType={message.messageType}
-          content={message.content}
-        />
-      ))}
+      {messages.map(
+        (message: Message) =>
+          (message.role === 'user' || message.role === 'assistant') && (
+            <ChatMessage
+              key={message.id}
+              role={message.role}
+              content={message.content}
+            />
+          )
+      )}
     </div>
   );
 }
