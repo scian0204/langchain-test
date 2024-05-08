@@ -1,5 +1,5 @@
 import React from 'react';
-import Markdown from 'react-markdown';
+import MarkdownPreview from '@uiw/react-markdown-preview';
 import remarkGfm from 'remark-gfm';
 
 function ChatMessage({
@@ -11,7 +11,14 @@ function ChatMessage({
 }) {
   return (
     <div className={`chat-message ${role === 'user' ? 'sent' : 'received'}`}>
-      <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
+      <MarkdownPreview
+        source={content}
+        wrapperElement={{
+          'data-color-mode': 'light',
+        }}
+        style={{ backgroundColor: 'transparent' }}
+        remarkPlugins={[remarkGfm]}
+      />
     </div>
   );
 }

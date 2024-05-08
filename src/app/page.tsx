@@ -11,8 +11,7 @@ function Home() {
       initialMessages: [
         {
           role: 'system',
-          content:
-            'You must answer in Korean with a Korean translation no matter what.',
+          content: 'Always answer in Korean using Hangul',
           id: 'resKor',
         },
       ],
