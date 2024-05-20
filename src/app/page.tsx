@@ -19,6 +19,7 @@ function Home() {
       onResponse: () => {
         setIsResWait(false);
       },
+      api: '/api/chat',
     });
 
   const handleMessageChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {

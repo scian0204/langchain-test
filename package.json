@@ -6,23 +6,31 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "serve": "nodemon server/server.js"
   },
   "dependencies": {
     "@langchain/community": "^0.0.53",
     "@uiw/react-markdown-preview": "^5.1.1",
     "ai": "^3.1.1",
     "cheerio": "^1.0.0-rc.12",
+    "express": "^4.19.2",
     "langchain": "^0.1.36",
+    "mssql": "^10.0.2",
     "next": "14.2.3",
     "react": "^18",
     "react-dom": "^18",
-    "remark-gfm": "^4.0.0"
+    "remark-gfm": "^4.0.0",
+    "typeorm": "^0.3"
   },
   "devDependencies": {
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "nodemon": "^3.1.0",
     "typescript": "^5"
+  },
+  "browser": {
+    "typeorm": false
   }
 }
